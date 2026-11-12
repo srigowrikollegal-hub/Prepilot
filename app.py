@@ -53,6 +53,17 @@ def resume_from_upload(upload):
     return data.decode("utf-8", errors="ignore")
 
 
+def friendly_error(exc):
+    code = getattr(exc, "code", None)
+    msg = " ".join(str(getattr(exc, "message", None) or exc).split())[:300]
+    if code == 429:
+        return (f"Gemini free-tier limit reached ({msg}). Choose another model in the sidebar, "
+                "or wait a minute and try again.")
+    if code in (400, 403) and "key" in msg.lower():
+        return f"There is a problem with the Gemini API key ({code}): {msg}"
+    return f"Gemini error {code or type(exc).__name__}: {msg}"
+
+
 def render_event(ev, box):
     t = ev["type"]
     if t == "goal":
@@ -177,7 +188,7 @@ if page == PAGES[0]:
                     ss.interview = None
                 except Exception as exc:
                     status.update(label="Stopped with an error", state="error")
-                    st.error(f"{type(exc).__name__}: {exc}")
+                    st.error(friendly_error(exc))
             if ss.run:
                 st.success("Finished. See the results, then try the mock interview.")
                 st.button("📊 Open results", type="primary", on_click=go_to, args=(PAGES[1],))
@@ -256,12 +267,18 @@ if page == PAGES[2]:
             st.markdown(f"The interviewer will ask questions for **{run['role']} at {run['company']}**, "
                         "focusing on your skill gaps, and score every answer.")
             if st.button("🎤 Start mock interview", type="primary"):
-                llm = LLM(api_key, run.get("model"))
-                gaps = (run["state"].get("match") or {}).get("missing_skills", [])
-                agent = Interviewer(llm, run["company"], run["role"], run["jd"], gaps, run["state"].get("report", ""))
-                q, cat = agent.first_question()
-                ss.interview = {"agent": agent, "q": q, "cat": cat, "done": False}
-                st.rerun()
+                try:
+                    with st.spinner("Preparing the first question..."):
+                        llm = LLM(api_key, None if model_choice.startswith("Auto") else model_choice,
+                                  log=lambda m: st.toast(m))
+                        gaps = (run["state"].get("match") or {}).get("missing_skills", [])
+                        agent = Interviewer(llm, run["company"], run["role"], run["jd"], gaps,
+                                            run["state"].get("report", ""))
+                        q, cat = agent.first_question()
+                    ss.interview = {"agent": agent, "q": q, "cat": cat, "done": False}
+                    st.rerun()
+                except Exception as exc:
+                    st.error(friendly_error(exc))
         else:
             agent = iv["agent"]
             for i, h in enumerate(agent.history, 1):
@@ -284,10 +301,13 @@ if page == PAGES[2]:
                     iv["done"] = True
                     st.rerun()
                 if ans:
-                    with st.spinner("Evaluating your answer..."):
-                        ev = agent.evaluate(iv["q"], iv["cat"], ans)
-                    iv["q"], iv["cat"] = ev["next_question"], ev["next_category"]
-                    st.rerun()
+                    try:
+                        with st.spinner("Evaluating your answer..."):
+                            ev = agent.evaluate(iv["q"], iv["cat"], ans)
+                        iv["q"], iv["cat"] = ev["next_question"], ev["next_category"]
+                        st.rerun()
+                    except Exception as exc:
+                        st.error(friendly_error(exc) + " Your answer was not lost; please send it again.")
             if scores:
                 st.markdown("#### 📈 Your scores")
                 st.line_chart(pd.DataFrame({"score": scores}, index=range(1, len(scores) + 1)))
