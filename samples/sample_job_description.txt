@@ -1,0 +1,29 @@
+Role: Systems Engineer (Freshers, 2027 batch)
+Location: Bengaluru / Mysuru / Pune
+(Sample job description written for demonstrating PrepPilot.)
+
+About the role
+You will design, build and test software applications for global clients as part of a delivery team.
+After joining you will complete a foundation training programme and then work on live projects.
+
+Eligibility
+- B.E./B.Tech in any branch, 2027 graduating batch
+- Minimum 60% throughout academics, no active backlogs
+
+Required skills
+- Programming in Java or Python
+- Object oriented programming concepts
+- Data structures and algorithms
+- Database management systems and SQL
+- Operating systems and computer networks fundamentals
+- Basic web technologies (HTML, CSS, JavaScript)
+- Good communication and teamwork
+- Analytical and logical reasoning (aptitude)
+
+Good to have
+- Exposure to cloud platforms (AWS or Azure)
+- Git version control
+- Any internship or project experience in software development
+
+Selection process
+Online assessment (aptitude, reasoning, verbal, pseudo-code), followed by a technical interview and an HR interview.

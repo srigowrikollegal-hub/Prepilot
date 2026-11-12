@@ -1,0 +1,23 @@
+ANANYA RAO (sample resume for demonstration)
+B.E. Information Science and Engineering, 2027 | CGPA 8.4
+Email: ananya.sample@example.com
+
+SKILLS
+Languages: Python, C
+Web: HTML, CSS
+Databases: MySQL
+Tools: Git, VS Code, Jupyter
+Core subjects: Data structures, Operating systems, DBMS
+Soft skills: Communication, teamwork
+
+PROJECTS
+Smart Attendance System - Python, OpenCV, MySQL
+  Face-recognition attendance for classrooms; stored records in MySQL and exported reports.
+Movie Recommendation Web App - Python, Flask, HTML/CSS
+  Content-based recommender using TF-IDF and cosine similarity.
+
+CERTIFICATIONS
+NPTEL: Programming, Data Structures and Algorithms using Python (Elite)
+
+ACHIEVEMENTS
+Solved 150+ problems on LeetCode; finalist in college hackathon 2025.
